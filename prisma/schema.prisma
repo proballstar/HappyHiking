@@ -1,17 +1,62 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Attendees {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  listing_id String?   @db.Uuid
+  person_id  String?   @db.Uuid
+  comment    String?
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Blog {
+  blog_id    Int       @id @default(autoincrement())
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  title      String?
+  desc       String?
+  main_topic String?
+  writer     String?   @db.Uuid
+  content    String?
+  likes      Int?      @default(0)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Comments {
+  comment_id_ Int       @id @default(autoincrement()) @map("comment_id ")
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  message     String?
+  author_id   String?   @db.Uuid
+  blog_id     Int?
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Listings {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  name       String?   @db.VarChar
+  desc       String?   @db.VarChar
+  route      String?   @db.VarChar
+  date       DateTime? @db.Date
+  author     String?   @db.Uuid
+  content    String?   @default("")
+}
+
+model Person {
+  id           String    @id @db.Uuid
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  fname        String?   @default("")
+  lname        String?   @default("")
+  about        String?   @default("") @db.VarChar
+  email        String?   @default("")
+  verified     Boolean?  @default(false)
+  weekly_hours Int?
 }
