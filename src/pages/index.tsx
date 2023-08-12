@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 import { UserButton } from "@clerk/nextjs";
 
 export default function Home() {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const { data } = api.listings.getAll.useQuery();
 
   const user = useUser();
 
@@ -19,6 +19,17 @@ export default function Home() {
       <div>
         {!!user.isSignedIn && <UserButton />}
         {!user.isSignedIn && <SignInButton mode="modal" />}
+        <div>
+          {data?.map((listing) => (
+            <div key={listing.id}>
+              {listing.name}
+              {listing.desc}
+              <p>
+                {listing.date?.toTimeString()}
+              </p>
+            </div>
+          ))}
+        </div>
     </div>
     </>
   );
