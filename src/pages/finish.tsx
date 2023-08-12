@@ -7,14 +7,15 @@ export default function Page() {
     const user = useUser();
     const router = useRouter()
 
-    let fc = useFormik({
+    const fc = useFormik({
         initialValues: {
             numHours: 0,
             about: ""
         },
-        onSubmit: async (values) => {
+        onSubmit: (values) => {
             console.log(values)
             router.push("/")
+            console.log(user.user)
         }
     })
 
