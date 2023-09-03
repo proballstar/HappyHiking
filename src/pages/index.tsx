@@ -2,22 +2,18 @@
 import { SignInButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
 import { api } from "~/utils/api";
-import type RouterOutputs from "~/utils/api";
+import type { RouterOutputs } from "~/utils/api";
+import React from "react";
 import { UserButton } from "@clerk/nextjs";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { LoadingPage } from "./components/loading";
+import Input from "./components/input";
 
 dayjs.extend(relativeTime);
 
-function Input({name, placeholder, method="text"}: {name: string, placeholder: string, method?: string}) {
-  return (
-    <div className="flex gap-2 p-2 w-full">
-      <label className="flex">{name}</label>
-      <input placeholder={placeholder} className="grow outline-none w-full bg-transparent" type={method} />
-    </div>
-  )
-}
 
 type PostWithUser = RouterOutputs["listings"]["getAll"][number]; 
 
@@ -26,7 +22,7 @@ function PostView(props: PostWithUser) {
   const { post: listing, author } = props
   
   return (
-    <div key={listing.id} className="p-5 border-b border-blue-400 flex flex-col gap-3">
+    <div key={listing.id} className="p-5 border-b border-blue-400 flex gap-3">
         <Image src={author.profileImageUrl} className="w-14 h-14 rounded-full" alt="Profile Image URL" width={56} height={56} />
         <div className="flex flex-col">
           <div className="flex gap-4">
@@ -36,44 +32,84 @@ function PostView(props: PostWithUser) {
           <div className="flex flex-col">
             <span>{listing.name}</span>
             <span>{listing.desc}</span>
+            <span>{listing.route}</span>
           </div>
         </div>
     </div>
   )
 }
 
+function VerificationMessage() {
+  let router = useRouter();
+  return (
+    <div className="flex flex-col">
+      Not verified, please verify yourself using the button below
+      <button className="px-5 py-2 bg-green-900 text-white rounded-md" onClick={() => router.push('/finish')}>
+        Verify
+      </button>
+    </div>
+  )
+}
 function CreatePostWizard() {
   const { user } = useUser();
+  const { mutate, isLoading } = api.listings.post.useMutation()
+
+  const [name, setName] = React.useState("")
+  const [desc, setDesc] = React.useState("")
+  const [route, setRoute] = React.useState("")
+  const [date, setDate] = React.useState(new Date())
 
   if(!user) return <div>No user!</div>
 
-  const verified = true;
-
   const { data } = api.user.userInfo.useQuery({email: user.primaryEmailAddress!.emailAddress})
 
-  if(!data?.v) return <div>Not Verified</div>
+  if(!data?.v) return <VerificationMessage />
 
   return (
     <div className="flex flex-col gap-3 p-5 border-b border-blue-500">
-      {JSON.stringify(data)}
-      <Input name="Name" placeholder="Enter the name of the hike" />
-      <Input name="Description" placeholder="Describe and explain the hike" />
-      <Input name="Route" placeholder="Enter the route of the hike"  />
-      <Input name="Date" placeholder="" method="date" />
+      <Input name="Name" placeholder="Enter the name of the hike" value={name} onChange={(e) => setName(e.target.value)} />
+      <Input name="Description" placeholder="Describe and explain the hike" value={desc} onChange={(e) => setDesc(e.target.value)} />
+      <Input name="Route" placeholder="Enter the route of the hike" value={route} onChange={(e) => setRoute(e.target.value)} />
+      <Input name="Date" method="date" placeholder="Enter the date of the hike" onChange={(e) => setDate(new Date(e.target.value))} />
+      <button onClick={() => mutate({
+        name: name,
+        desc: desc,
+        route: route,
+        date: date,
+        author_id: user.id,
+        email: user.primaryEmailAddress!.emailAddress
+      })}>
+        {isLoading ? "Loading..." : "Submit"}
+      </button>
+    </div>
+  )
+}
+
+function Feed() {
+  const { data, isLoading: postsLoading } = api.listings.getAll.useQuery();
+
+  if(postsLoading) return <LoadingPage />
+
+  if(!data) return <div>Something went wrong</div>
+
+  return (
+    <div className="border-b border-emerald-400 flex flex-col-reverse">
+      {data?.map((fullPost) => (
+        <PostView key={fullPost.post.id } {...fullPost} />
+      ))}
     </div>
   )
 }
 
 export default function Home() {
-  const { data, isLoading } = api.listings.getAll.useQuery();
 
-  const user = useUser();
+  const { user, isLoaded: userLoaded, isSignedIn } = useUser();
+
+  api.listings.getAll.useQuery();
 
   console.log(user)
 
-  if(isLoading) return (<div>Loading...</div>)
-
-  if(!data) return (<div>Something went wronga</div>)
+  if (!userLoaded) return <LoadingPage />;
 
   return (
     <>
@@ -83,20 +119,18 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex justify-center h-screen bg-emerald-200">
-        <div className="w-full border-x border-blue-400 h-full md:max-w-2xl">
+        <div className="w-full flex-col flex border-x border-blue-400 h-full md:max-w-2xl">
           <div className="py-2 border-b border-blue-500">
-            {!!user.isSignedIn && 
+            {!!isSignedIn && 
               <div className="flex justify-center">
                 <UserButton />
               </div>}
-            {!user.isSignedIn && <SignInButton mode="modal" />}
+            {!isSignedIn && <SignInButton mode="modal" />}
           </div>
-          <CreatePostWizard />
-          <div className="border-b border-emerald-400">
-          {data?.map((fullPost) => (
-            <PostView key={fullPost.post.id } {...fullPost} />
-          ))}
-        </div>
+          <div className="flex flex-col">
+            <CreatePostWizard />
+            <Feed />
+          </div>
         </div>
     </div>
     </>

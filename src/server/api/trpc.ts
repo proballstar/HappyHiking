@@ -11,6 +11,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { prisma } from "~/server/db";
+import { getAuth } from "@clerk/nextjs/server"
 
 /**
  * 1. CONTEXT
@@ -20,32 +21,17 @@ import { prisma } from "~/server/db";
  * These allow you to access things when processing a request, like the database, the session, etc.
  */
 
-type CreateContextOptions = Record<string, never>;
-
-/**
- * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
- * it from here.
- *
- * Examples of things you may need it for:
- * - testing, so we don't have to mock Next.js' req/res
- * - tRPC's `createSSGHelpers`, where we don't have req/res
- *
- * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
- */
-const createInnerTRPCContext = (_opts: CreateContextOptions) => {
-  return {
-    prisma,
-  };
-};
-
 /**
  * This is the actual context you will use in your router. It will be used to process every request
  * that goes through your tRPC endpoint.
  *
  * @see https://trpc.io/docs/context
+ * 
  */
 export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+  return {
+    prisma,
+  }
 };
 
 /**
@@ -91,4 +77,26 @@ export const createTRPCRouter = t.router;
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
+
+const enforceUserAuth = t.middleware(async ({ ctx, next }) => {
+
+  const personInfo = await ctx.prisma.person.findFirst({
+    where: {
+      email: ctx.currentUser?.emailAddresses[0]!.emailAddress
+    }
+  })
+
+  if (!ctx.currentUser || !personInfo?.verified) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
+  }
+
+  return next({
+    ctx: {
+      session: ctx.currentUser,
+    }
+  });
+})
+
 export const publicProcedure = t.procedure;

@@ -9,7 +9,7 @@ function filterUser(user: User) {
 
     let u = user.username;
 
-    let id = user.id.slice(user.id.length-3, user.id.length)
+    const id = user.id.slice(user.id.length-3, user.id.length)
 
     if(!user.username) {
         u = `${user.firstName}${user.lastName}${id}`
@@ -28,6 +28,11 @@ export const listingsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.listings.findMany({
         take: 100,
+        orderBy: {
+            date: {
+                sort: "desc"
+            }
+        }
     });
 
     const users = (
@@ -54,4 +59,30 @@ export const listingsRouter = createTRPCRouter({
         }
     })
   }),
-});
+    post: publicProcedure
+                .input(z.object({
+                    email: z.string(),
+                    name: z.string(),
+                    desc: z.string(),
+                    route: z.string(),
+                    date: z.date(),
+                    author_id: z.string(),
+                }))
+                .mutation(async ({ ctx, input }) => {
+                    const authorInfo = await ctx.prisma.person.findFirst({
+                        where: {
+                            email: input.email
+                        }
+                    })
+                    const postCreation = await ctx.prisma.listings.create({
+                        data: {
+                            author: authorInfo?.id,
+                            prof_url: input.author_id,
+                            route: input.route,
+                            name: input.name,
+                            desc: input.desc,
+                            date: input.date,
+                        }
+                    })
+                })
+  });

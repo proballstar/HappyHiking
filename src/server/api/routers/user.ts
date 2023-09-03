@@ -15,5 +15,27 @@ export const usersRouter = createTRPCRouter({
     return {
         v: user?.verified,
     }
-   })
+   }),
+   createUser: publicProcedure
+                 .input(z.object({
+                    fname: z.string(),
+                    lname: z.string(),
+                    about: z.string(),
+                    email: z.string(),
+                    weekly_hours: z.number()
+                 }))
+                 .mutation(async ({ ctx, input }) => {
+                    const personCreation = await ctx.prisma.person.create({
+                      data: {
+                        fname: input.fname,
+                        lname: input.lname,
+                        about: input.about,
+                        email: input.email,
+                        weekly_hours: input.weekly_hours,
+                        verified: true
+                      }
+                    })
+                    console.log("PERSON")
+                    console.log(personCreation)
+                 })
 });
