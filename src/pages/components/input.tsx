@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 export default function Input({name, placeholder, method="text", value, onChange}: {name: string, placeholder: string, method?: string, value?: any, onChange: React.ChangeEventHandler<HTMLInputElement> | undefined}) {
   return (
     <div className="flex gap-2 p-2 w-full">
