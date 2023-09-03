@@ -40,7 +40,7 @@ function PostView(props: PostWithUser) {
 }
 
 function VerificationMessage() {
-  let router = useRouter();
+  const router = useRouter();
   return (
     <div className="flex flex-col">
       Not verified, please verify yourself using the button below

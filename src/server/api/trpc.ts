@@ -78,25 +78,4 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 
-const enforceUserAuth = t.middleware(async ({ ctx, next }) => {
-
-  const personInfo = await ctx.prisma.person.findFirst({
-    where: {
-      email: ctx.currentUser?.emailAddresses[0]!.emailAddress
-    }
-  })
-
-  if (!ctx.currentUser || !personInfo?.verified) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-    });
-  }
-
-  return next({
-    ctx: {
-      session: ctx.currentUser,
-    }
-  });
-})
-
 export const publicProcedure = t.procedure;
