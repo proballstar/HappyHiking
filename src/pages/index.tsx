@@ -9,8 +9,8 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { LoadingPage } from "./components/loading";
-import Input from "./components/input";
+import { LoadingPage } from "../components/loading";
+import Input from "../components/input";
 
 dayjs.extend(relativeTime);
 

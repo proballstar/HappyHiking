@@ -1,6 +1,5 @@
 import React from 'react';
 import { UserButton, useUser } from '@clerk/nextjs';
-import { useFormik } from 'formik'
 import { useRouter } from 'next/navigation';
 import { api } from '~/utils/api';
 
@@ -14,7 +13,7 @@ export default function Page() {
     const [about, setAbout] = React.useState("")
 
     function submit() {
-        const mut = mutate({
+        mutate({
             weekly_hours: numHours,
             about: about,
             email: user!.primaryEmailAddress!.emailAddress,

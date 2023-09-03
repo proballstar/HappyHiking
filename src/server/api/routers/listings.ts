@@ -74,7 +74,7 @@ export const listingsRouter = createTRPCRouter({
                             email: input.email
                         }
                     })
-                    const postCreation = await ctx.prisma.listings.create({
+                    await ctx.prisma.listings.create({
                         data: {
                             author: authorInfo?.id,
                             prof_url: input.author_id,
