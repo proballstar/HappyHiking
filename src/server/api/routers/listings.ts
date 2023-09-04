@@ -84,5 +84,70 @@ export const listingsRouter = createTRPCRouter({
                             date: input.date,
                         }
                     })
-                })
+                }),
+    getPost: publicProcedure
+                .input(z.object({
+                    id: z.string()
+                }))
+                .query(async ({ ctx, input }) => {
+                    const post = await ctx.prisma.listings.findFirst({
+                        where: {
+                            id: input.id
+                        },
+                        include: {
+                            Attendees: {
+                                include: {
+                                    Person: true
+                                }
+                            }     
+                        }
+                    });
+
+                    if(!post) {
+                        throw new TRPCError({
+                            code: "NOT_FOUND",
+                            message: "Post not found"
+                        })
+                    }
+                
+                    const clerkUser = await clerkClient.users.getUser(post.prof_url!)
+                
+                    return {
+                        post,
+                        author: clerkUser
+                    }
+                }),
+    joinEvent: publicProcedure
+                    .input(z.object({
+                        email: z.string(),
+                        event_id: z.string(),
+                        comment: z.string()
+                    }))
+                    .mutation(async ({ ctx, input }) => {
+                        const personInfo = await ctx.prisma.person.findFirst({
+                            where: {
+                                email: input.email
+                            }
+                        })
+                        const attendees = await ctx.prisma.attendees.findMany({
+                            where: {
+                                person_id: personInfo?.id,
+                                listing_id: input.event_id
+                            }
+                        })
+                        if(attendees.length > 0) {
+                            throw new TRPCError({
+                                code: "BAD_REQUEST",
+                                message: "Already joined event"
+                            })
+                        } else {
+                            await ctx.prisma.attendees.create({
+                                data: {
+                                    person_id: personInfo?.id,
+                                    listing_id: input.event_id,
+                                    comment: input.comment
+                                }
+                            })
+                        }
+                    })
   });

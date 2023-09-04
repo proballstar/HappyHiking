@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider     = "postgresql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Example {
@@ -21,18 +20,22 @@ model Attendees {
   listing_id String?   @db.Uuid
   person_id  String?   @db.Uuid
   comment    String?
+  Listings   Listings? @relation(fields: [listing_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Person     Person?   @relation(fields: [person_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Blog {
-  blog_id    Int       @id @default(autoincrement())
-  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  blog_id    Int        @id @default(autoincrement())
+  created_at DateTime?  @default(now()) @db.Timestamptz(6)
   title      String?
   desc       String?
   main_topic String?
-  writer     String?   @db.Uuid
+  writer     String?    @db.Uuid
   content    String?
-  likes      Int?      @default(0)
+  likes      Int?       @default(0)
+  Person     Person?    @relation(fields: [writer], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Comments   Comments[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -42,27 +45,35 @@ model Comments {
   message     String?
   author_id   String?   @db.Uuid
   blog_id     Int?
+  Person      Person?   @relation(fields: [author_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  Blog        Blog?     @relation(fields: [blog_id], references: [blog_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Listings {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at DateTime? @default(now()) @db.Timestamptz(6)
-  name       String?   @db.VarChar
-  desc       String?   @db.VarChar
-  route      String?   @db.VarChar
-  date       DateTime? @db.Date
-  author     String?   @db.Uuid
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at DateTime?   @default(now()) @db.Timestamptz(6)
+  name       String?     @db.VarChar
+  desc       String?     @db.VarChar
+  route      String?     @db.VarChar
+  date       DateTime?   @db.Date
+  author     String?     @db.Uuid
   prof_url   String?
+  Attendees  Attendees[]
+  Person     Person?     @relation(fields: [author], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model Person {
-  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at   DateTime? @default(now()) @db.Timestamptz(6)
-  fname        String?   @default("")
-  lname        String?   @default("")
-  about        String?   @default("") @db.VarChar
-  email        String?   @default("")
-  verified     Boolean?  @default(false)
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at   DateTime?   @default(now()) @db.Timestamptz(6)
+  fname        String?     @default("")
+  lname        String?     @default("")
+  about        String?     @default("") @db.VarChar
+  email        String?     @default("")
+  verified     Boolean?    @default(false)
   weekly_hours Int?
+  Attendees    Attendees[]
+  Blog         Blog[]
+  Comments     Comments[]
+  Listings     Listings[]
 }

@@ -19,6 +19,7 @@ type PostWithUser = RouterOutputs["listings"]["getAll"][number];
 
 function PostView(props: PostWithUser) {
 
+  const router = useRouter();
   const { post: listing, author } = props
   
   return (
@@ -32,8 +33,10 @@ function PostView(props: PostWithUser) {
           <div className="flex flex-col">
             <span>{listing.name}</span>
             <span>{listing.desc}</span>
-            <span>{listing.route}</span>
           </div>
+          <button className="px-5 py-2 bg-green-200" onClick={() => router.push(`/hike/${listing.id}`)}>
+            Find more info
+          </button>
         </div>
     </div>
   )
