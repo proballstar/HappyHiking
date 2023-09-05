@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { SignInButton, useUser } from "@clerk/nextjs";
@@ -13,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { LoadingPage } from "../components/loading";
 import Input from "../components/input";
 import app from "~/components/auth";
-import { getAnalytics, initializeAnalytics } from "firebase/analytics";
+import { getAnalytics, initializeAnalytics, isSupported } from "firebase/analytics";
 
 dayjs.extend(relativeTime);
 
@@ -117,7 +118,15 @@ export default function Home() {
 
   React.useEffect(() => {
     const analytics = getAnalytics(app);
-    initializeAnalytics(app);
+    isSupported()
+      .then((supported) => {
+        if(supported) {
+          initializeAnalytics(app)
+        }
+      })
+      .catch((err) => {
+        console.error(err)
+      })
   }, [])
 
   if (!userLoaded) return <LoadingPage />;
