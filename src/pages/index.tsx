@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { SignInButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
@@ -11,6 +12,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { LoadingPage } from "../components/loading";
 import Input from "../components/input";
+import app from "~/components/auth";
+import { getAnalytics, initializeAnalytics } from "firebase/analytics";
 
 dayjs.extend(relativeTime);
 
@@ -111,6 +114,11 @@ export default function Home() {
   api.listings.getAll.useQuery();
 
   console.log(user)
+
+  React.useEffect(() => {
+    const analytics = getAnalytics(app);
+    initializeAnalytics(app);
+  }, [])
 
   if (!userLoaded) return <LoadingPage />;
 

@@ -7,12 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Example {
-  id   Int    @id @default(autoincrement())
-  name String
-  bio  String
-}
-
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Attendees {
   id         Int       @id @default(autoincrement())
@@ -76,4 +70,10 @@ model Person {
   Blog         Blog[]
   Comments     Comments[]
   Listings     Listings[]
+}
+
+model Example {
+  id   Int    @id @default(autoincrement())
+  name String
+  bio  String
 }
