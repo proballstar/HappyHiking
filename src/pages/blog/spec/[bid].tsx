@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+/* eslint-disable react/no-children-prop */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { useRouter, NextRouter } from "next/router";
@@ -42,9 +44,7 @@ export default function SpecificBlog() {
                 <p>{data?.desc}</p>
             </div>
             <div>
-                <ReactMarkdown remarkPlugins={[remarkGfm, remarkDirective]}>
-                        {data?.content}
-                </ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm, remarkDirective]} children={data?.content!} />
             </div>
             <div className="flex flex-col">
                 <h2>Comments</h2>
