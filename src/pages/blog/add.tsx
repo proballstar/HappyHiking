@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useUser } from "@clerk/nextjs";
+import { getAnalytics, logEvent } from "firebase/analytics";
 import { Dispatch, SetStateAction, useState } from "react";
 import { ChangeEvent } from "react";
 import Input from "~/components/input";
@@ -26,6 +27,7 @@ export default function AddPost() {
             content: content,
             email: user?.primaryEmailAddress.emailAddress
         })
+        logEvent(getAnalytics(), "added_new_post")
     }
 
     return (

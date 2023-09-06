@@ -2,6 +2,7 @@ import React from 'react';
 import { UserButton, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { api } from '~/utils/api';
+import { logEvent, getAnalytics } from 'firebase/analytics';
 
 export default function Page() {
 
@@ -20,6 +21,8 @@ export default function Page() {
             fname: user!.firstName!,
             lname: user!.lastName!,
         })
+
+        logEvent(getAnalytics(), "finish_registration")
 
         router.push('/')
     }

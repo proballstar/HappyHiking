@@ -13,8 +13,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { LoadingPage } from "../components/loading";
 import Input from "../components/input";
-import app from "~/components/auth";
-import { getAnalytics, initializeAnalytics, isSupported } from "firebase/analytics";
 
 dayjs.extend(relativeTime);
 
@@ -113,21 +111,6 @@ export default function Home() {
   const { user, isLoaded: userLoaded, isSignedIn } = useUser();
 
   api.listings.getAll.useQuery();
-
-  console.log(user)
-
-  React.useEffect(() => {
-    const analytics = getAnalytics(app);
-    isSupported()
-      .then((supported) => {
-        if(supported) {
-          initializeAnalytics(app)
-        }
-      })
-      .catch((err) => {
-        console.error(err)
-      })
-  }, [])
 
   if (!userLoaded) return <LoadingPage />;
 

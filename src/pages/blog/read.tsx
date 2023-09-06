@@ -3,32 +3,35 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { LoadingPage } from "~/components/loading"
 import { api } from "~/utils/api"
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkDirective from "remark-directive";
+import { NextRouter, useRouter } from "next/router"
+import { getAnalytics, logEvent } from "firebase/analytics"
 
 function Feed() {
     
     const { data, isLoading } = api.blog.retrieve.useQuery()
+    const router: NextRouter = useRouter()
 
     if(!data) return <div>Something went wrong</div>
 
     if(isLoading) return <LoadingPage />
 
+    function changePage(id: number) {
+        logEvent(getAnalytics(), "moving_to_spec", {
+            page_id: id
+        })
+        void router.push(`/blog/spec/${id}`)
+            .then((_) => console.log("Changed page"))
+    }
+
     return (
-        <div>
+        <div className="flex flex-col">
             {data.map((i, k) => {
                 const fullName = `${i.Person!.fname!} ${i.Person!.lname!}`
                 return (
-                    <div key={`blog-site-${k}`}>
+                    <button className="flex flex-col" key={`blog-site-${k}`} onClick={() => changePage(i.blog_id)}>
                         <h2>{i.title} by {fullName}</h2>
                         <p>{i.desc}</p>
-                         <article className="content">
-                                <ReactMarkdown remarkPlugins={[remarkGfm, remarkDirective]}>
-                                    {i.content!}
-                                </ReactMarkdown>
-                        </article>
-                    </div>
+                    </button>
                 )
             })}
         </div>
