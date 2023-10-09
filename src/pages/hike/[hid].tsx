@@ -42,7 +42,7 @@ export default function SpecificHikePage() {
         <>
             <Head>
                 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5539865102402934"
-     crossorigin="anonymous"></script>
+     crossOrigin="anonymous"></script>
             </Head>
             <div className="flex flex-col px-10 py-4">
                 <h1 className="text-4xl font-semibold capitalize">{data.post.name}</h1>
