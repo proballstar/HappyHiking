@@ -22,9 +22,9 @@ export default function SpecificHikePage() {
 
     if(!data || postLoading ) return <LoadingPage />
 
-    async function joinEvent() {
+    function joinEvent() {
         if(!user) {
-            await router.push("/sign-in")
+            router.push("/sign-in").then(() => {return;}).catch(() => {return;})
         }
         if(!user?.primaryEmailAddress?.emailAddress) return <div>Please update your email address to join this event</div>
         mutate({
@@ -76,11 +76,11 @@ export default function SpecificHikePage() {
                     <button onClick={() => setModalOpen(true)} data-modal-target="defaultModal" data-modal-toggle="defaultModal" className="px-6 py-2 bg-green-500 my-2 rounded-lg text-white">
                         Join Event
                     </button>
-                    <Modal header="Join Event" sub_message={joinLoading ? "Loading..." : "Submit"} close={() => modalClose()} open={() => setModalOpen(true)} isOpen={modalOpen}>
+                    <Modal header="Join Event" sub_message="Close" close={() => modalClose()} open={() => setModalOpen(true)} isOpen={modalOpen}>
                         <div className="p-4 flex flex-col">
                             <Input name="Comments" placeholder="Enter any comments here" value={comments} onChange={(e) => setComments(e.target.value)}  />
-                            <button className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">
-                                Submit
+                            <button onClick={() => joinEvent()} className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto">
+                                {joinLoading ? "Loading..." : "Join"}
                             </button>
                         </div>
                     </Modal>

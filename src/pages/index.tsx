@@ -80,7 +80,7 @@ function CreatePostWizard() {
       }
     })
 
-    if(!data.route.startsWith("https://www.") || !data.route.startsWith("www.") || !data.route.startsWith("www.")) {
+    if(!(data.route.startsWith("https://www.") || data.route.startsWith("www."))) {
       setValidate(<div className="text-red-500">Please enter a valid route (https://www.example.com) format or (www.example.com)</div>)
       proceed = false
     }
