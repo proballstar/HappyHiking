@@ -67,7 +67,7 @@ export default function SpecificHikePage() {
                             })}
                         </div>
                     </div>
-                    <a onClick={() => route(data?.post!.route)} className="flex justify-center px-6 py-2 border-2 border-slate-600 rounded-md">
+                    <a onClick={() => route(data.post.route!)} className="flex justify-center px-6 py-2 border-2 border-slate-600 rounded-md">
                         Route
                     </a>
                     <button onClick={() => setModalOpen(true)} data-modal-target="defaultModal" data-modal-toggle="defaultModal" className="px-6 py-2 bg-green-500 my-2 rounded-lg text-white">
