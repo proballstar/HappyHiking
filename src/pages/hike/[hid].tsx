@@ -22,7 +22,10 @@ export default function SpecificHikePage() {
 
     if(!data || postLoading ) return <LoadingPage />
 
-    function joinEvent() {
+    async function joinEvent() {
+        if(!user) {
+            await router.push("/sign-in")
+        }
         if(!user?.primaryEmailAddress?.emailAddress) return <div>Please update your email address to join this event</div>
         mutate({
             email: user.primaryEmailAddress?.emailAddress,
