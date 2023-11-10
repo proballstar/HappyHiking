@@ -50,19 +50,46 @@ function VerificationMessage() {
     <div className="flex flex-col">
       Not verified, please verify yourself using the button below
       <button className="px-5 py-2 bg-green-900 text-white rounded-md" onClick={() => router.push('/finish')}>
-        Verify
+        Add additional Info
       </button>
     </div>
   )
 }
+
+interface PreMutateData {
+  name: string;
+  desc: string;
+  route: string;
+  date: Date;
+  author_id: string;
+  email: string;
+}
 function CreatePostWizard() {
   const { user } = useUser();
-  const { mutate, isLoading } = api.listings.post.useMutation()
+  const { mutate, isLoading, isSuccess } = api.listings.post.useMutation()
+
+  function premutate(data: PreMutateData) {
+
+    let value;
+    let proceed = true
+    Object.keys(data).forEach((key) => {
+      value = data[key as keyof PreMutateData]
+      if(!value) {
+        setValidate(<div className="text-red-500">Please fill out {key} and any other values</div>)
+        proceed = false
+      }
+    })
+
+    if(proceed) {
+      mutate(data)
+    }
+  }
 
   const [name, setName] = React.useState("")
   const [desc, setDesc] = React.useState("")
   const [route, setRoute] = React.useState("")
   const [date, setDate] = React.useState(new Date())
+  const [validate, setValidate] = React.useState(<div></div>);
 
   if(!user) return <div>No user!</div>
 
@@ -76,7 +103,7 @@ function CreatePostWizard() {
       <Input name="Description" placeholder="Describe and explain the hike" value={desc} onChange={(e) => setDesc(e.target.value)} />
       <Input name="Route" placeholder="Enter the route of the hike" value={route} onChange={(e) => setRoute(e.target.value)} />
       <Input name="Date" method="date" placeholder="Enter the date of the hike" onChange={(e) => setDate(new Date(e.target.value))} />
-      <button onClick={() => mutate({
+      <button onClick={() => premutate({
         name: name,
         desc: desc,
         route: route,
@@ -85,7 +112,9 @@ function CreatePostWizard() {
         email: user.primaryEmailAddress!.emailAddress
       })}>
         {isLoading ? "Loading..." : "Submit"}
+        {isSuccess && "Success!"}
       </button>
+      {validate}
     </div>
   )
 }

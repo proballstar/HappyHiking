@@ -34,7 +34,7 @@ export default function Page() {
             <UserButton />
             <form className='flex flex-col p-5'>
                 <div className='flex flex-col p-3'>
-                    <p className='font-semibold font-display'>Number of hours</p>
+                    <p className='font-semibold font-display'>Number of Hours Hiking per Week</p>
                     <input 
                         className='px-2 py-1 bg-white rounded-md border border-black' 
                         value={numHours}
