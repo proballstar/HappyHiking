@@ -1,177 +1,18 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { SignInButton, useUser } from "@clerk/nextjs";
-import Head from "next/head";
 import { api } from "~/utils/api";
-import type { RouterOutputs } from "~/utils/api";
-import React from "react";
-import { UserButton } from "@clerk/nextjs";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { LoadingPage } from "../components/loading";
-import Input from "../components/input";
+import RedesignedHeader from "./components/redesigned/header";
+import PostFeeder from "./components/redesigned/post.feeder";
 
-dayjs.extend(relativeTime);
+export default function Redesign() {
 
+    const { data } = api.listings.getAll.useQuery()
 
-type PostWithUser = RouterOutputs["listings"]["getAll"][number]; 
-
-function PostView(props: PostWithUser) {
-
-  const router = useRouter();
-  const { post: listing, author } = props
-  
-  return (
-    <div key={listing.id} className="p-5 border-b border-blue-400 flex gap-3">
-        <Image src={author.profileImageUrl} className="w-14 h-14 rounded-full" alt="Profile Image URL" width={56} height={56} />
+    return (
         <div className="flex flex-col">
-          <div className="flex gap-4">
-            <span>{`${author.firstName} ${author.lastName} - ${dayjs(listing.created_at).fromNow()}`}</span>
-            <span className="font-thin"></span>
-          </div>
-          <div className="flex flex-col">
-            <span>{listing.name}</span>
-            <span>{listing.desc}</span>
-          </div>
-          <button className="px-5 py-2 bg-green-200" onClick={() => router.push(`/hike/${listing.id}`)}>
-            Find more info
-          </button>
+            {/* Header */}
+            <RedesignedHeader />
+            {/* Feed */}
+            <PostFeeder />
         </div>
-    </div>
-  )
+    )
 }
 
-function VerificationMessage() {
-  const router = useRouter();
-  return (
-    <div className="flex flex-col">
-      Not verified, please verify yourself using the button below
-      <button className="px-5 py-2 bg-green-900 text-white rounded-md" onClick={() => router.push('/finish')}>
-        Add additional Info
-      </button>
-    </div>
-  )
-}
-
-interface PreMutateData {
-  name: string;
-  desc: string;
-  route: string;
-  date: Date;
-  author_id: string;
-  email: string;
-}
-function CreatePostWizard() {
-  const { user } = useUser();
-  const { mutate, isLoading, isSuccess } = api.listings.post.useMutation()
-
-  function premutate(data: PreMutateData) {
-
-    let value;
-    let proceed = true
-    Object.keys(data).forEach((key) => {
-      value = data[key as keyof PreMutateData]
-      if(!value) {
-        setValidate(<div className="text-red-500">Please fill out {key} and any other values</div>)
-        proceed = false
-      }
-    })
-
-    if(!(data.route.startsWith("https://www.") || data.route.startsWith("www."))) {
-      setValidate(<div className="text-red-500">Please enter a valid route (https://www.example.com) format or (www.example.com)</div>)
-      proceed = false
-    }
-
-    if(proceed) {
-      mutate(data)
-    }
-  }
-
-  const [name, setName] = React.useState("")
-  const [desc, setDesc] = React.useState("")
-  const [route, setRoute] = React.useState("")
-  const [date, setDate] = React.useState(new Date())
-  const [validate, setValidate] = React.useState(<div></div>);
-
-  if(!user) return <div>No user!</div>
-
-  const { data } = api.user.userInfo.useQuery({email: user.primaryEmailAddress!.emailAddress})
-
-  if(!data?.v) return <VerificationMessage />
-
-  return (
-    <div className="flex flex-col gap-3 p-5 border-b border-blue-500">
-      <Input name="Name" placeholder="Enter the name of the hike" value={name} onChange={(e) => setName(e.target.value)} />
-      <Input name="Description" placeholder="Describe and explain the hike" value={desc} onChange={(e) => setDesc(e.target.value)} />
-      <Input name="Route" placeholder="Enter the route of the hike" value={route} onChange={(e) => setRoute(e.target.value)} />
-      <Input name="Date" method="date" placeholder="Enter the date of the hike" onChange={(e) => setDate(new Date(e.target.value))} />
-      <button onClick={() => premutate({
-        name: name,
-        desc: desc,
-        route: route,
-        date: date,
-        author_id: user.id,
-        email: user.primaryEmailAddress!.emailAddress
-      })}>
-        {isLoading ? "Loading..." : "Submit"}
-        {isSuccess && "Success!"}
-      </button>
-      {validate}
-    </div>
-  )
-}
-
-function Feed() {
-  const { data, isLoading: postsLoading } = api.listings.getAll.useQuery();
-
-  if(postsLoading) return <LoadingPage />
-
-  if(!data) return <div>Something went wrong</div>
-
-  return (
-    <div className="border-b border-emerald-400 flex flex-col-reverse">
-      {data?.map((fullPost) => (
-        <PostView key={fullPost.post.id } {...fullPost} />
-      ))}
-    </div>
-  )
-}
-
-export default function Home() {
-
-  const { user, isLoaded: userLoaded, isSignedIn } = useUser();
-
-  api.listings.getAll.useQuery();
-
-  if (!userLoaded) return <LoadingPage />;
-
-  return (
-    <>
-      <Head>
-        <title>Create T3 App</title>
-        <meta name="description" content="Generated by create-t3-app" />
-        <link rel="icon" href="/favicon.ico" />
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5539865102402934"
-     crossOrigin="anonymous"></script>
-      </Head>
-      <div className="flex justify-center h-screen bg-emerald-200">
-        <div className="w-full flex-col flex border-x border-blue-400 h-full md:max-w-2xl">
-          <div className="py-2 border-b border-blue-500">
-            {!!isSignedIn && 
-              <div className="flex justify-center">
-                <UserButton />
-              </div>}
-            {!isSignedIn && <SignInButton mode="modal" />}
-          </div>
-          <div className="flex flex-col">
-            <CreatePostWizard />
-            <Feed />
-          </div>
-        </div>
-    </div>
-    </>
-  );
-}
