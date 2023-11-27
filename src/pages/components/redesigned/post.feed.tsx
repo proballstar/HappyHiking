@@ -8,7 +8,7 @@ export default function PostFeed({ feed }: { feed: PostWithUser[] }) {
         <div className="grid grid-cols-4 gap-5 p-8">
             {feed?.map((post) => {
                 return (
-                    <Post post={post} />
+                    <Post key={post.post.id} post={post} />
                 )
             })}
         </div>
