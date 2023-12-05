@@ -8,7 +8,7 @@ export default function RedesignedHeader() {
     return (
         <div className="flex flex-row justify-around px-6 py-4">
                 <div className="flex flex-row mr-auto pl-5">
-                    <button className="text-[1.15rem]">Happy Hiking</button>
+                    <button className="text-[1.5rem] font-bold text-green-700">Happy Hiking</button>
                 </div>
                 <div className="flex space-x-5 flex-row ml-auto pr-5">
                     <button className="text-[1.15rem]">Feed</button>

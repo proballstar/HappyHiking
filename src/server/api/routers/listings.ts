@@ -81,7 +81,8 @@ export const listingsRouter = createTRPCRouter({
                             route: input.route,
                             name: input.name,
                             desc: input.desc,
-                            date: input.date,
+                            start: input.date,
+                            end: input.date
                         }
                     })
                 }),

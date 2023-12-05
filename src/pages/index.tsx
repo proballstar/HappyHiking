@@ -4,8 +4,6 @@ import PostFeeder from "../components/redesigned/post.feeder";
 
 export default function Redesign() {
 
-    const { data } = api.listings.getAll.useQuery()
-
     return (
         <div className="flex flex-col">
             {/* Header */}
@@ -16,3 +14,4 @@ export default function Redesign() {
     )
 }
 
+ 
