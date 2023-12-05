@@ -8,6 +8,7 @@ import Modal from "~/components/modal";
 import { api } from "~/utils/api";
 import Input from "~/components/input";
 import Head from 'next/head'
+import RedesignedHeader from "~/components/redesigned/header";
 
 interface ToggleProps {
     children: React.ReactNode,
@@ -30,7 +31,7 @@ function ToggleButton({ children, name }: ToggleProps) {
             />
             <span
             className={`slider mr-3 flex h-[26px] w-[50px] items-center rounded-full p-1 duration-200 ${
-                open ? 'bg-primary' : 'bg-[#CCCCCE]'
+                open ? 'bg-green-700' : 'bg-[#CCCCCE]'
             }`}
             >
             <span
@@ -106,7 +107,8 @@ export default function SpecificHikePage() {
                 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5539865102402934"
      crossOrigin="anonymous"></script>
             </Head>
-            <div className="flex flex-col px-10 py-8 overflow-hidden">
+            <RedesignedHeader />
+            <div className="flex flex-col px-10 gap-3 py-8 overflow-hidden">
                 <div className="w-screen ">
                     <div className="w-[40vw] rounded-[1rem] shadow-md flex flex-col mx-auto bg-gray-100">
                         <img className="rounded-t-[1rem]" src="https://tse1.mm.bing.net/th?id=OIP.fKmS3znemZvcYbkOyk7OPAHaEK&pid=Api" alt="Hiking" />
