@@ -29,7 +29,7 @@ export const listingsRouter = createTRPCRouter({
     const posts = await ctx.prisma.listings.findMany({
         take: 100,
         orderBy: {
-            date: {
+            start: {
                 sort: "desc"
             }
         }
@@ -97,9 +97,11 @@ export const listingsRouter = createTRPCRouter({
                         include: {
                             Attendees: {
                                 include: {
-                                    Person: true
+                                    Person: true,
+
                                 }
-                            }     
+                            },
+                            EventItem: true
                         }
                     });
 

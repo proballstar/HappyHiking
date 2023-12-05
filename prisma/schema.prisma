@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -51,10 +51,12 @@ model Listings {
   name       String?     @db.VarChar
   desc       String?     @db.VarChar
   route      String?     @db.VarChar
-  date       DateTime?   @db.Date
+  start      DateTime?   @db.Timestamptz(6)
   author     String?     @db.Uuid
   prof_url   String?
+  end        DateTime?   @db.Timestamptz(6)
   Attendees  Attendees[]
+  EventItem  EventItem[]
   Person     Person?     @relation(fields: [author], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -77,4 +79,15 @@ model Example {
   id   Int    @id @default(autoincrement())
   name String
   bio  String
+}
+
+model EventItem {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  start_time DateTime  @db.Timetz(6)
+  end_time   DateTime  @db.Timetz(6)
+  name       String
+  addr       String?
+  event_id   String?   @db.Uuid
+  Listings   Listings? @relation(fields: [event_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

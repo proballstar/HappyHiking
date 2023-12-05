@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import app from "~/components/auth";
 import { getAnalytics, initializeAnalytics, isSupported } from "firebase/analytics";
 import React from "react";
+import Head from "next/head";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
 
@@ -23,6 +24,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 
   return (
     <ClerkProvider {...pageProps}>
+      <Head>
+        <meta name="google-adsense-account" content="ca-pub-5539865102402934" />
+      </Head>
       <Component {...pageProps} />
       <Analytics />
     </ClerkProvider>
