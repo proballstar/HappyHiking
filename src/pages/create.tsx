@@ -57,6 +57,7 @@ export default function Create() {
   const [start, setStart] = useState<Date>(new Date());
   const [end, setEnd] = useState<Date>(new Date());
   const [route, setRoute] = useState<any>("");
+  const [photo, setPhoto] = useState<string>("");
   const { mutate, isLoading, data, error, isError, isSuccess } =
     api.listings.post.useMutation();
   const router = useRouter();
@@ -81,6 +82,7 @@ export default function Create() {
       email: user.user?.primaryEmailAddress?.emailAddress!,
       route: route,
       event_items: event_items,
+      photo: photo,
     });
   }
 
@@ -115,6 +117,14 @@ export default function Create() {
               setRoute(e.target.value)
             }
             type="text"
+          />
+          <InputBox
+            name="Photo Album"
+            value={photo}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setPhoto(e.target.value)
+            }
+            type="url"
           />
           <InputBox
             name="Start"
