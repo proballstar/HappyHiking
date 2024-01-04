@@ -74,12 +74,15 @@ export default function Create() {
       route,
     });
     mutate({
-      date: start,
-      email: user.user?.primaryEmailAddress?.emailAddress!,
+      author_id: user.user?.imageUrl!,
       name: title,
       desc: description,
+      start: start,
+      end: end,
+      email: user.user?.primaryEmailAddress?.emailAddress!,
       route: route,
-      author_id: user.user?.imageUrl!,
+      event_items: event_items,
+      photo: photo,
     });
   }
 
