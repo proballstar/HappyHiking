@@ -79,7 +79,7 @@ export default function Create() {
       name: title,
       desc: description,
       route: route,
-      author_id: user.user?.imageUrl,
+      author_id: user.user?.imageUrl!,
     });
   }
 
