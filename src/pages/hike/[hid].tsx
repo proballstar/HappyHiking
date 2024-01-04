@@ -187,8 +187,7 @@ export default function SpecificHikePage() {
                         key={`EventItem-${item.id}`}
                       >
                         {item.name}: {item.addr} -{" "}
-                        {item.start_time?.toTimeString()} to{" "}
-                        {item.end_time?.toTimeString()}
+                        {item.start_time?.toTimeString()}
                       </div>
                     );
                   })}
